@@ -25,6 +25,7 @@ GEM
       diff-lcs (>= 1.2.0, < 2.0)
       rspec-support (~> 3.5.0)
     rspec-support (3.5.0)
+    safe-enum (0.3.0)
     slop (3.6.0)
 
 PLATFORMS
@@ -33,6 +34,7 @@ PLATFORMS
 DEPENDENCIES
   pry-byebug
   rspec
+  safe-enum
 
 BUNDLED WITH
    1.13.7

@@ -55,12 +55,17 @@ class Cipher
         # loop through message, encrypt pairs, append to encrypt string
         index = 0
         encrypted_string = ''
+
+        # iterate over the message string encrypting the pairs and buildings encryted message.
         while index < message.length do
-            #encrypted_string << encrypt_pair(message[index], message[index + 1])
+            encrypted_string << encrypt_pair(message[index], message[index + 1], determine_rule(message[index], message[index+1]))
             index += 2
         end
 
-        p encrypt_pair('l', 'e', determine_rule('l', 'e'))
+        p 'ENCRYPTED STRING'
+        p encrypted_string
+
+        #p encrypt_pair('c', 'r', determine_rule('c', 'r'))
         # seperate duplicate letters with an 'x'
         # remove spaces
         # pair all the letters
@@ -72,34 +77,71 @@ class Cipher
         # not on the same row - in the same order select the 2 letters that form a rectangle
     end
 
+    # this function will analyse a pair to determine what rule to use to encrypt the pair
     def determine_rule(ch_1, ch_2)
+        #p '---'
+        #p ch_1
+        #p ch_2
+        #p cube.index(ch_1)
+        #p cube.index(ch_2)
+        #p cube
         pair = Array.new([ch_1, ch_2]) # create a sorted array with the pairs of chars
-        return $RULE_1 if ((cube.index(ch_1)) / 5) == ((cube.index(ch_2)) / 5)
+        return $RULE_1 if cube.index(ch_1) / 5 == cube.index(ch_2) / 5
         return $RULE_2 if (cube.index(pair.max) - cube.index(pair.min)) % 5 == 0
         return $RULE_3
     end
 
     def encrypt_pair(ch_1, ch_2, rule)
-
+        p ' < -------'
         enc_1 = ''
         enc_2 = ''
 
         case rule
         when $RULE_1
-            p 'rule 1'
-            cube.index(ch_1) / 5 < (cube.index(ch_1) + 1) / 5 ? enc_1 = cube[cube.index(ch_1) - 4] : enc_1 = cube[cube.index(ch_1) + 1]
-            cube.index(ch_2) / 5 < (cube.index(ch_2) + 1) / 5 ? enc_2 = cube[cube.index(ch_2) - 4] : enc_2 = cube[cube.index(ch_2) + 1]
+            p 'R1'
+            cube.index(ch_1) / 5 < (cube.index(ch_1) + 1) / 5 ? enc_1 = cube[cube.index(ch_1) - 4].dup : enc_1 = cube[cube.index(ch_1) + 1].dup
+            cube.index(ch_2) / 5 < (cube.index(ch_2) + 1) / 5 ? enc_2 = cube[cube.index(ch_2) - 4].dup : enc_2 = cube[cube.index(ch_2) + 1].dup
         when $RULE_2
-            (cube.index(ch_1) + 5) > 24? enc_1 = cube[cube.index(ch_1) -20 ] : enc_1 = cube[cube.index(ch_1) + 5]
-            (cube.index(ch_2) + 5) > 24? enc_2 = cube[cube.index(ch_2) -20 ] : enc_2 = cube[cube.index(ch_2) + 5]
+            p 'R2'
+            (cube.index(ch_1) + 5) > 24? enc_1 = cube[cube.index(ch_1) - 20 ].dup : enc_1 = cube[cube.index(ch_1) + 5].dup
+            (cube.index(ch_2) + 5) > 24? enc_2 = cube[cube.index(ch_2) - 20 ].dup : enc_2 = cube[cube.index(ch_2) + 5].dup
 
         when $RULE_3
-            p 'rule 3'
+            p 'R3'
+            pair = Array.new([cube.index(ch_1), cube.index(ch_2)]).sort
+            p 'INPUTS'
+            p ch_1
+            p ch_2
+            ##p ((pair[1] - pair[0]).to_f / 5.to_f).round
+            #p ((pair[1] - pair[0]).to_f / 5.to_f).floor
+            #p pair[0] + ( 5 * ((pair[1] - pair[0]).to_f / 5.to_f).round)
+            adjustment = 0
 
-            if condition
-
+            if pair[0] % 5 > pair[1] % 5 # down -left
+                adjustment = (((pair[0] + pair[1]) / 5).floor) * 5
+                enc_1 = cube[pair[0] + adjustment].dup
+                enc_2 = cube[pair[1] - adjustment].dup
+            else # down - right
+                adjustment = (((pair[1] - pair[0]) / 5).floor) * 5
+                enc_1 = cube[pair[1] - adjustment].dup
+                enc_2 = cube[pair[0] + adjustment].dup
             end
 
+            p 'adjustment'
+            p adjustment
+
+            #enc_1 = cube[cube.index(ch_1) + adjustment]
+            #enc_2 = cube[cube.index(ch_2) - adjustment]
+
+            p ' RESULTS'
+            p enc_1
+            p enc_2
+            # array was sorted to make the algo simpler. May be necessary to switch to retain original order
+            if cube.index(ch_1) > cube.index(ch_2)
+                temp = enc_1
+                enc_1 = enc_2
+                enc_2 = temp
+            end
 
 
         else

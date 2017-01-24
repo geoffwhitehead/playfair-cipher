@@ -79,12 +79,6 @@ class Cipher
 
     # this function will analyse a pair to determine what rule to use to encrypt the pair
     def determine_rule(ch_1, ch_2)
-        #p '---'
-        #p ch_1
-        #p ch_2
-        #p cube.index(ch_1)
-        #p cube.index(ch_2)
-        #p cube
         pair = Array.new([ch_1, ch_2]) # create a sorted array with the pairs of chars
         return $RULE_1 if cube.index(ch_1) / 5 == cube.index(ch_2) / 5
         return $RULE_2 if (cube.index(pair.max) - cube.index(pair.min)) % 5 == 0
@@ -109,47 +103,37 @@ class Cipher
         when $RULE_3
             p 'R3'
             pair = Array.new([cube.index(ch_1), cube.index(ch_2)]).sort
-            p 'INPUTS'
-            p ch_1
-            p ch_2
-            ##p ((pair[1] - pair[0]).to_f / 5.to_f).round
-            #p ((pair[1] - pair[0]).to_f / 5.to_f).floor
-            #p pair[0] + ( 5 * ((pair[1] - pair[0]).to_f / 5.to_f).round)
-            adjustment = 0
 
-            if pair[0] % 5 > pair[1] % 5 # down -left
-                adjustment = (((pair[0] + pair[1]) / 5).floor) * 5
-                enc_1 = cube[pair[0] + adjustment].dup
-                enc_2 = cube[pair[1] - adjustment].dup
+            i = pair[0]
+            j = pair[1]
+            if pair[0] % 5 > pair[1] % 5 # down - left
+                while i < pair[1] do
+                    i += 5
+                end
+                while j > pair[0] do
+                    j -= 5
+                end
             else # down - right
-                adjustment = (((pair[1] - pair[0]) / 5).floor) * 5
-                enc_1 = cube[pair[1] - adjustment].dup
-                enc_2 = cube[pair[0] + adjustment].dup
+                while i + 5 < pair[1] do
+                    i += 5
+                end
+                while j - 5 > pair[0] do
+                    j -= 5
+                end
+
             end
+            enc_1 = cube[j].dup
+            enc_2 = cube[i].dup
 
-            p 'adjustment'
-            p adjustment
-
-            #enc_1 = cube[cube.index(ch_1) + adjustment]
-            #enc_2 = cube[cube.index(ch_2) - adjustment]
-
-            p ' RESULTS'
-            p enc_1
-            p enc_2
-            # array was sorted to make the algo simpler. May be necessary to switch to retain original order
             if cube.index(ch_1) > cube.index(ch_2)
                 temp = enc_1
                 enc_1 = enc_2
                 enc_2 = temp
             end
-
-
         else
             raise_error('unknown case when encrypting')
         end
-
         return enc_1 << enc_2
-
     end
 
     def decrypt_pair(ch_1, ch_2, rule)

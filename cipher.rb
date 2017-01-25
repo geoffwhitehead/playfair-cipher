@@ -91,9 +91,6 @@ class Cipher
         enc_1 = ''
         enc_2 = ''
 
-        p '---'
-        p ch_1
-        p ch_2
         case determine_rule(ch_1, ch_2)
         when $RULE_1
             cube.index(ch_1) / 5 < (cube.index(ch_1) + 1) / 5 ? enc_1 = cube[cube.index(ch_1) - 4].dup : enc_1 = cube[cube.index(ch_1) + 1].dup
